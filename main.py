@@ -129,7 +129,24 @@ with open(path_w, mode='w') as f:
                 print('k=', k)
                 break
             r = copy.deepcopy(r_new)
-        #Mの要素を0~255に絞る（力技）
+        # Mの分布図
+        plt.scatter(range(22500), M*255, s=3)
+        plt.grid()
+        plt.savefig(p_str + "M.png")
+        # pltの初期化
+        plt.clf()
+        plt.cla()
+        plt.close()
+        # Mのup画像
+        plt.scatter(range(22500), M * 255, s=3)
+        plt.grid()
+        plt.ylim(-300, 600)
+        plt.savefig(p_str + "M_up.png")
+        # pltの初期化
+        plt.clf()
+        plt.cla()
+        plt.close()
+        # Mの要素を0~255に絞る（力技）
         M[M < 0] = 0
         M[M > 1] = 1
         print('max=', np.amax(M))
