@@ -20,9 +20,9 @@ path_w = '/Users/tanioka/PycharmProjects/re_explain3/a.txt'
 with open(path_w, mode='w') as f:
 
     # (1)
-    img2 = cv2.imread("image4-2.jpg", 0)
+    img2 = cv2.imread("image2-2.jpg", 0)
     img = img2/255
-    X2 = cv2.imread("image4-2.jpg", 0)
+    X2 = cv2.imread("image2-2.jpg", 0)
     X = X2/255
 
     row, col = img.shape
@@ -41,13 +41,16 @@ with open(path_w, mode='w') as f:
     list_PSNR = []
     list_k = []
     v2 = np.random.uniform(0, size, (1, size))
+    # pの値（0.1~2.0）
     for p in np.arange(0.1, 2.1, 0.1):
         p_str = str('{:.2f}'.format(p))
         f.write('\np=')
         f.write(p_str)
         f.flush()
+        # r=差
         r = img_array
         r_new = np.zeros((size, size))
+        # M=最終結果
         M = np.zeros((size, size))
 # 0.1~2のループ入れる
         for k in range(40):  # 一番外側　ランク
@@ -68,6 +71,7 @@ with open(path_w, mode='w') as f:
                     a = []
                     b = []
                     count = 0
+                    # ノイズ入ってない部分だけ計算
                     for x in range(size):
                         if img_array[i, x] != 0:
                             a.append(r[i, x])
@@ -103,18 +107,25 @@ with open(path_w, mode='w') as f:
                         x_0 = np.sum(2*w*w*c_np*d_np)
                         x_1 = np.sum(2*w*w*d_np*d_np)
                         v[0, i] = x_0 / x_1
+                # 多次元を1次元に
                 a_flat = (r - (u @ v)).flatten()
                 b_flat = r.flatten()
                 E_new = (np.linalg.norm(a_flat, ord=2)) ** 2 / (np.linalg.norm(b_flat, ord=2)) ** 2
                 # qの収束条件
                 sigma = np.abs(E - E_new)
                 E = copy.copy(E_new)
-            r_new = r - (u @ v)
+            uv = u @ v
+
+            # Mの要素を0~255に絞る（力技）
+            uv[uv < 0] = 0
+            uv[uv > 1] = 1
+
+            r_new = r - uv
             for y in range(size):
                 for x in range(size):
                     if img_array[y, x] == 0:
                         r_new[y, x] = 0
-            M += u @ v
+            M += uv
             # kの収束条件
             c_flat = r.flatten()
             d_flat = img.flatten()
@@ -130,6 +141,7 @@ with open(path_w, mode='w') as f:
                 break
             r = copy.deepcopy(r_new)
         # Mの分布図
+        """
         plt.scatter(range(22500), M*255, s=3)
         plt.grid()
         plt.savefig(p_str + "M.png")
@@ -146,6 +158,8 @@ with open(path_w, mode='w') as f:
         plt.clf()
         plt.cla()
         plt.close()
+        """
+
         # Mの要素を0~255に絞る（力技）
         M[M < 0] = 0
         M[M > 1] = 1
