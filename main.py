@@ -173,17 +173,26 @@ with open(path_w, mode='w') as f:
         # Mの要素を0~255に絞る（力技）
         M[M < 0] = 0
         M[M > 1] = 1
-        print('max=', np.amax(M))
-        print('min=', np.amin(M))
+        # print('max=', np.amax(M))
+        # print('min=', np.amin(M))
 
+        M2 = 255*M
+        cv2.imwrite(p_str + ".jpg", M2)
+
+        '''
+        # 手動PSNR
         mse = ((np.linalg.norm(X_array-M, ord=2))**2)/(size*size)
         PSNR = 10*np.log10((255**2)/mse)
+        '''
+
+        # 関数PSNR
+        # めんどいけど画像にしてからもっかい呼び出す
+        img_M = cv2.imread(p_str + ".jpg", 0)
+        # PSNR出すよ
+        PSNR = cv2.PSNR(img2, img_M)
+
         list_PSNR.append(PSNR)
         list_k.append(k)
-        print('PSNR=', PSNR)
-        M2 = 255*M
-
-        cv2.imwrite(p_str + ".jpg", M2)
         k_str = str(k)
         PSNR_str = str(PSNR)
         f.write('\nk=')
