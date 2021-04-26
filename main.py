@@ -27,22 +27,30 @@ with open(path_w, mode='w') as f:
 
     row, col = img.shape
     # ノイズ黒
-    pts_x = np.random.randint(0, col-1, 1000)
-    pts_y = np.random.randint(0, row-1, 1000)
-    img[pts_y, pts_x] = 0
+    pts_x = np.random.randint(0, col-1, 3557)
+    pts_y = np.random.randint(0, row-1, 3557)
+    img[pts_y, pts_x] = 0.1
+
+    # ノイズ白（未）
+    pts_x = np.random.randint(0, col-1, 3557)
+    pts_y = np.random.randint(0, row-1, 3557)
+    img[pts_y, pts_x] = 1
+
     # ばってん部分
     img = cv2.line(img, (0, 0), (size-1, size-1), (0, 0, 0), 5)
     img = cv2.line(img, (0, size-1), (size-1, 0), (0, 0, 0), 5)
 
+    # Numpy配列の作成
     img_array = np.array(img)
     X_array = np.array(X)
     cv2.imwrite("image_noise.jpg", img*255)
-    # ノイズ部分取得OK
+
     list_PSNR = []
     list_k = []
     v2 = np.random.uniform(0, size, (1, size))
     # pの値（0.1~2.0）
     for p in np.arange(0.1, 2.1, 0.1):
+        # 小数点を調整
         p_str = str('{:.2f}'.format(p))
         f.write('\np=')
         f.write(p_str)
@@ -52,8 +60,9 @@ with open(path_w, mode='w') as f:
         r_new = np.zeros((size, size))
         # M=最終結果
         M = np.zeros((size, size))
-# 0.1~2のループ入れる
+
         for k in range(40):  # 一番外側　ランク
+            # 色々な初期化
             v = copy.deepcopy(v2)
             u = np.zeros((size, 1))
             a = np.zeros((1, size))
@@ -116,9 +125,10 @@ with open(path_w, mode='w') as f:
                 E = copy.copy(E_new)
             uv = u @ v
 
+            # 思ってたより結果よくならなかったからボツ
             # Mの要素を0~255に絞る（力技）
-            uv[uv < 0] = 0
-            uv[uv > 1] = 1
+            # uv[uv < 0] = 0
+            # uv[uv > 1] = 1
 
             r_new = r - uv
             for y in range(size):
