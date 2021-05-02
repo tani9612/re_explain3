@@ -3,8 +3,9 @@ from tkinter import Image
 import cv2
 import numpy as np
 import copy
-from matplotlib import pyplot as plt
 import math
+import skimage.metrics
+from matplotlib import pyplot as plt
 
 np.seterr(divide='ignore')
 
@@ -46,6 +47,7 @@ with open(path_w, mode='w') as f:
     cv2.imwrite("image_noise.jpg", img*255)
 
     list_PSNR = []
+    list_SSIM = []
     list_k = []
     v2 = np.random.uniform(0, size, (1, size))
     # pの値（0.1~2.0）
@@ -70,7 +72,6 @@ with open(path_w, mode='w') as f:
             c = np.zeros((1, size))
             d = np.zeros((1, size))
             w = np.zeros((1, size))
-
 
             E = 50
             print('k=', k)
@@ -191,21 +192,45 @@ with open(path_w, mode='w') as f:
         # PSNR出すよ
         PSNR = cv2.PSNR(img2, img_M)
 
+        # SSIM出すよ
+        SSIM = skimage.metrics.structural_similarity(img2, img_M)
+        print('PSNR=', PSNR)
+        print('SSIM=', SSIM)
+
         list_PSNR.append(PSNR)
+        list_SSIM.append(SSIM)
         list_k.append(k)
         k_str = str(k)
         PSNR_str = str(PSNR)
+        SSIM_str = str(SSIM)
         f.write('\nk=')
         f.write(k_str)
         f.write('\nPSNR=')
         f.write(PSNR_str)
+        f.write('\nSSIM=')
+        f.write(SSIM_str)
         f.flush()
 
     print(list_PSNR)
     PSNR_x = np.arange(0.1, 2.1, 0.1)
     PSNR_y = list_PSNR
+
     plt.plot(PSNR_x, PSNR_y)
     plt.savefig("PSNR.png")
+
+    # pltの初期化
+    plt.clf()
+    plt.cla()
+    plt.close()
+
+    plt.plot(PSNR_x, list_SSIM)
+    plt.savefig("SSIM.png")
+
+    # pltの初期化
+    plt.clf()
+    plt.cla()
+    plt.close()
+
     plt.plot(PSNR_x, list_k)
     plt.savefig("rank.png")
 
