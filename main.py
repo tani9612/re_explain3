@@ -6,6 +6,7 @@ import copy
 import math
 import skimage.metrics
 from matplotlib import pyplot as plt
+fig, ax = plt.subplots()
 
 np.seterr(divide='ignore')
 
@@ -14,16 +15,16 @@ divided = 1/bug
 # print(divided)
 
 N = 100  # 仮
-size = 150
+size = 225
 # p = 0.9
 
 path_w = '/Users/tanioka/PycharmProjects/re_explain3/a.txt'
 with open(path_w, mode='w') as f:
 
     # (1)
-    img2 = cv2.imread("image2-2.jpg", 0)
+    img2 = cv2.imread("image3.jpg", 0)
     img = img2/255
-    X2 = cv2.imread("image2-2.jpg", 0)
+    X2 = cv2.imread("image3.jpg", 0)
     X = X2/255
 
     row, col = img.shape
@@ -83,7 +84,7 @@ with open(path_w, mode='w') as f:
                     count = 0
                     # ノイズ入ってない部分だけ計算
                     for x in range(size):
-                        if img_array[i, x] != 0:
+                        if img_array[i, x] != 0.1:
                             a.append(r[i, x])
                             b.append(v[0, x])
                             count += 1
@@ -215,7 +216,13 @@ with open(path_w, mode='w') as f:
     PSNR_x = np.arange(0.1, 2.1, 0.1)
     PSNR_y = list_PSNR
 
-    plt.plot(PSNR_x, PSNR_y)
+    plt.title('PSNR')
+    plt.grid(True)
+    plt.xlabel('p')
+    plt.ylabel('PSNR')
+    plt.plot(PSNR_x, PSNR_y, marker="o")
+    plt.ylim(10.0, 25.0)
+    plt.xticks(np.arange(0.1, 2.1, 0.1))
     plt.savefig("PSNR.png")
 
     # pltの初期化
@@ -223,7 +230,13 @@ with open(path_w, mode='w') as f:
     plt.cla()
     plt.close()
 
-    plt.plot(PSNR_x, list_SSIM)
+    plt.title('SSIM')
+    plt.grid(True)
+    plt.xlabel('p')
+    plt.ylabel('SSIM')
+    plt.plot(PSNR_x, list_SSIM, marker="o")
+    plt.ylim(0, 1.0)
+    plt.xticks(np.arange(0.1, 2.1, 0.1))
     plt.savefig("SSIM.png")
 
     # pltの初期化
@@ -231,6 +244,11 @@ with open(path_w, mode='w') as f:
     plt.cla()
     plt.close()
 
-    plt.plot(PSNR_x, list_k)
+    plt.title('rank')
+    plt.grid(True)
+    plt.xlabel('p')
+    plt.ylabel('rank')
+    plt.plot(PSNR_x, list_k, marker="o")
+    plt.xticks(np.arange(0.1, 2.1, 0.1))
     plt.savefig("rank.png")
 
