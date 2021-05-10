@@ -15,16 +15,16 @@ divided = 1/bug
 # print(divided)
 
 N = 100  # 仮
-size = 225
+size = 150
 # p = 0.9
 
 path_w = '/Users/tanioka/PycharmProjects/re_explain3/a.txt'
 with open(path_w, mode='w') as f:
 
     # (1)
-    img2 = cv2.imread("image3.jpg", 0)
+    img2 = cv2.imread("image2-2.jpg", 0)
     img = img2/255
-    X2 = cv2.imread("image3.jpg", 0)
+    X2 = cv2.imread("image2-2.jpg", 0)
     X = X2/255
 
     row, col = img.shape
@@ -38,9 +38,24 @@ with open(path_w, mode='w') as f:
     pts_y = np.random.randint(0, row-1, 3557)
     img[pts_y, pts_x] = 1
 
+    """
+    # 円部分
+    img = cv2.circle(img, (75, 75), 50, (0, 0, 0), thickness=5)
+    """
+
+    """
+    # テキスト
+    img = cv2.putText(img, 'iiguni', (25, 75), cv2.FONT_HERSHEY_COMPLEX, 1.0, (0, 0, 0), thickness=2)
+    """
+
+    """
     # ばってん部分
     img = cv2.line(img, (0, 0), (size-1, size-1), (0, 0, 0), 5)
     img = cv2.line(img, (0, size-1), (size-1, 0), (0, 0, 0), 5)
+    """
+
+    # 木隠してみる
+    img = cv2.rectangle(img, (10, 40), (40, 130), (0, 0, 0), thickness=-1)
 
     # Numpy配列の作成
     img_array = np.array(img)
